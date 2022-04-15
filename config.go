@@ -15,6 +15,7 @@ type Fragment interface {
 type Type struct {
 	Name      string `json:"name"`
 	Path      string `json:"path"`
+    Template string `json:"template"`
 	Extension string `json:"extension"`
 }
 

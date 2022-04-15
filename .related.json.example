@@ -2,6 +2,7 @@
     "types": [
         {
             "name": "component",
+            "template": "typescript/NextFuncComponent",
             "path": "./",
             "extension": "tsx"
         },
