@@ -1,0 +1,15 @@
+{
+    "types": [
+        {
+            "name": "component",
+            "path": "./",
+            "extension": "tsx"
+        },
+        {
+            "name": "cssmodule",
+            "path": "./styles/",
+            "extension": "module.css"
+        }
+    ],
+    "groups": [{ "name": "component", "types": ["component", "cssmodule"] }]
+}
