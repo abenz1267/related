@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"log"
 	"os"
@@ -26,10 +27,10 @@ func (t Type) getName() string {
 }
 
 type Group struct {
-	Name    string   `json:"name"`
-	Types   []string `json:"types"`
-	Pre       string `json:"pre"`
-	Post      string `json:"post"`
+	Name  string   `json:"name"`
+	Pre   string   `json:"pre"`
+	Post  string   `json:"post"`
+	Types []string `json:"types"`
 }
 
 func (g Group) getName() string {
@@ -51,7 +52,14 @@ func parseConfig() Config {
 
 	data, err := ioutil.ReadFile(cfgPath)
 	if err != nil {
-		log.Fatal(err)
+		if errors.Is(err, os.ErrNotExist) {
+			data, err = ioutil.ReadFile(filepath.Join(wd, "related.json"))
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			log.Fatal(err)
+		}
 	}
 
 	var cfg Config

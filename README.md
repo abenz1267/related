@@ -6,7 +6,7 @@
 
 ## Usage
 
-Place a ".related.json" file in your project folder. Content example:
+Place a "(.)related.json" file in your project folder. Content example:
 
 ```json
 {
