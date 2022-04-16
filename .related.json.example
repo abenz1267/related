@@ -4,6 +4,8 @@
             "name": "component",
             "template": "typescript/NextFuncComponent",
             "path": "./",
+            "pre": "typescript/MyCustomPreScript",
+            "post": "typescript/MyCustomPostScript",
             "extension": "tsx"
         },
         {
@@ -12,5 +14,12 @@
             "extension": "module.css"
         }
     ],
-    "groups": [{ "name": "component", "types": ["component", "cssmodule"] }]
+    "groups": [
+        {
+            "name": "component",
+            "types": ["component", "cssmodule"],
+            "pre": "typescript/MyCustomGroupPreScript",
+            "post": "typescript/MyCustomGroupPostScript"
+        }
+    ]
 }

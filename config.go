@@ -15,7 +15,9 @@ type Fragment interface {
 type Type struct {
 	Name      string `json:"name"`
 	Path      string `json:"path"`
-    Template string `json:"template"`
+	Template  string `json:"template"`
+	Pre       string `json:"pre"`
+	Post      string `json:"post"`
 	Extension string `json:"extension"`
 }
 
@@ -24,8 +26,10 @@ func (t Type) getName() string {
 }
 
 type Group struct {
-	Name  string   `json:"name"`
-	Types []string `json:"types"`
+	Name    string   `json:"name"`
+	Types   []string `json:"types"`
+	Pre       string `json:"pre"`
+	Post      string `json:"post"`
 }
 
 func (g Group) getName() string {
@@ -33,7 +37,7 @@ func (g Group) getName() string {
 }
 
 type Config struct {
-	Types  []Type `json:"types"`
+	Types  []Type  `json:"types"`
 	Groups []Group `json:"groups"`
 }
 

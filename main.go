@@ -12,6 +12,7 @@ import (
 	"strings"
 	"text/template"
 
+	lua "github.com/yuin/gopher-lua"
 	"golang.org/x/exp/slices"
 )
 
@@ -32,28 +33,41 @@ func main() {
 	cfg := parseConfig()
 
 	switch args[0] {
-	case "listtemplates":
+	case "list":
+		if len(args) == 1 {
+			log.Println("Please provide a type, either 'scripts' or 'templates'")
+		}
+
 		if len(args) == 2 {
-			listTemplates(localFS, args[1])
+			listAvailables(localFS, args[1], "")
 
 			return
 		}
 
-		listTemplates(localFS, "")
+		if len(args) == 3 {
+			listAvailables(localFS, args[1], args[2])
+
+			return
+		}
 	default:
 		validate(args, cfg)
 		create(args, cfg, localFS)
 	}
 }
 
-func listTemplates(localFS fs.FS, parent string) {
+func listAvailables(localFS fs.FS, kind string, parent string) {
 	systems := []fs.FS{embeddedFS, localFS}
 
 	files := make(map[string][]string)
 
-	root := "."
+	root := filepath.Join(".", kind)
 	if parent != "" {
-		root = filepath.Join("templates", parent)
+		root = filepath.Join(root, parent)
+	}
+
+	suffix := ".tmpl"
+	if kind == "scripts" {
+		suffix = ".lua"
 	}
 
 	for _, v := range systems {
@@ -63,14 +77,14 @@ func listTemplates(localFS fs.FS, parent string) {
 			}
 
 			if !entry.IsDir() { //nolint
-				if strings.HasSuffix(entry.Name(), ".tmpl") {
+				if strings.HasSuffix(entry.Name(), suffix) {
 					parent := strings.Split(path, string(filepath.Separator))[1]
 
 					if _, ok := files[parent]; !ok {
 						files[parent] = []string{}
 					}
 
-					tmplName := strings.TrimSuffix(entry.Name(), ".tmpl")
+					tmplName := strings.TrimSuffix(entry.Name(), suffix)
 
 					if !slices.Contains(files[parent], tmplName) {
 						files[parent] = append(files[parent], tmplName)
@@ -87,8 +101,35 @@ func listTemplates(localFS fs.FS, parent string) {
 		}
 	}
 
+	if len(files) == 0 {
+		fmt.Println("<nothing found>")
+
+		return
+	}
+
 	for k, v := range files {
-		fmt.Printf("%s: %s\n", k, strings.Join(v, ","))
+		fmt.Printf("%s: %s\n", k, strings.Join(v, ",")) //nolint
+	}
+}
+
+func execScript(scriptFile string, filename string, localFS fs.FS) {
+	script, err := fs.ReadFile(localFS, filepath.Join("scripts", scriptFile+".lua"))
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			log.Printf("Script not found: %s.", scriptFile)
+		}
+
+		return
+	}
+
+	L := lua.NewState()
+	defer L.Close()
+
+	L.SetGlobal("Name", lua.LString(filename))
+
+	err = L.DoString(string(script))
+	if err != nil {
+		log.Panic(err)
 	}
 }
 
@@ -134,13 +175,25 @@ func create(args []string, cfg Config, localFS fs.FS) {
 
 	group := getFragment(cfg.Groups, args[1])
 
+	if group.Pre != "" {
+		execScript(group.Pre, args[2], localFS)
+	}
+
 	for _, v := range group.Types {
 		createType(cfg, v, args[2], localFS)
+	}
+
+	if group.Post != "" {
+		execScript(group.Post, args[2], localFS)
 	}
 }
 
 func createType(cfg Config, typename, filename string, localFS fs.FS) {
 	fragment := getFragment(cfg.Types, typename)
+
+	if fragment.Pre != "" {
+		execScript(fragment.Pre, filename, localFS)
+	}
 
 	err := os.MkdirAll(fragment.Path, os.ModePerm)
 	if err != nil {
@@ -171,6 +224,10 @@ func createType(cfg Config, typename, filename string, localFS fs.FS) {
 		if err != nil {
 			log.Panic(err)
 		}
+	}
+
+	if fragment.Post != "" {
+		execScript(fragment.Post, filename, localFS)
 	}
 }
 
