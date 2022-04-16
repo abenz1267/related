@@ -15,16 +15,16 @@ Place a "(.)related.json" file in your project folder. Content example:
     "types": [
         {
             "name": "component",
-            "template": "typescript/NextFuncComponent",
+            "template": "typescript/NextFuncComponent.tmpl",
             "path": "./",
-            "pre": "typescript/MyCustomJS",
-            "post": "typescript/MyCustomPostScript",
-            "extension": "tsx"
+            "pre": "typescript/MyCustomJS.lua",
+            "post": "typescript/MyCustomPostScript.lua",
+            "suffix": ".tsx"
         },
         {
             "name": "cssmodule",
             "path": "./styles/",
-            "extension": "module.css"
+            "suffix": ".module.css"
         }
     ],
     "groups": [
@@ -47,22 +47,25 @@ If no template is provided, the file will be empty.
 | `list <scripts or templates> <parent>` | Lists all available templates or scripts, grouped by parent-folder. The parent is optional. |
 | `<type or group> <name> <filename>`    | Creates the file(s) based on the type or group provided                                     |
 
+### Custom Files
+
+Custom files like templates or scripts can be either placed in a `.related` folder near the config or in a `related` folder in your users config directory. Templates must be placed inside `templates` and scripts inside `scripts`. You can nest further.
+
+Related will prioritize project-level files over config ones.
+
 ### Templates
 
-Templates are embedded. You can create your own templates by placing them into your config folder. F.e. on Linux `~/config/related/templates/<parent>/<name>.tmpl`.
-
-You can overwrite the default templates by simply placing a copy in your config folder. Related will always prioritize custom templates over default ones.
+Templates are vanilla Golang templates, only data passed is the filename you provided. It can be accessed via `{{.}}` in the template.
 
 ### Scripts
 
 The following types are executable: lua scripts, javascript (via node), and binaries.
 
-Scripts must be placed in your config folder. F.e. on Linux `~/config/related/scripts/<parent>/<name>.lua`.
+You can execute scripts by settings pre- and post-scripts in the type or group definition. Related will look for the script and execute it according to the lifecycle.
 
-You can execute scripts by settings pre- and post-scripts in the type or group definition. Related will look for the script and execute it according to the lifecycle. Command line arguments will be passed, where the first argument is the current working dir and the second one is the name you provided to the initial command, f.e. `related group component MyComponent` will add `"MyComponent"` as the second argument.
+Passed command-line arguments:
 
-### Todo:
-
--   project-level templates/scripts
--   a bit more validation pre-execution
--   figure out a way to use nvm
+1. current working directory
+2. path
+3. filename
+4. extension
