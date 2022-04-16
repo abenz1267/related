@@ -1,5 +1,7 @@
 # Related - Create files based on individual definitions or groups
 
+Related helps with common file-creation-based tasks. You can predefine single types as well as groups. Scripts (lua, binary, javascript [needs node]) can be executed pre/post file creation as well as pre/post groups.
+
 ## Installation
 
 `go install github.com/abenz1267/related@latest`
@@ -63,3 +65,4 @@ You can execute scripts by settings pre- and post-scripts in the type or group d
 
 -   project-level templates/scripts
 -   a bit more validation pre-execution
+-   figure out a way to use nvm
