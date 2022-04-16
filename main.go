@@ -23,15 +23,13 @@ var validFragments = []string{"type", "group"} //nolint
 var embeddedFS embed.FS
 
 func main() {
+	args := os.Args[1:]
 	cfgDir, err := os.UserConfigDir()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	localFS := os.DirFS(filepath.Join(cfgDir, "related"))
-
-	args := os.Args[1:]
-	cfg := parseConfig()
 
 	switch args[0] {
 	case "list":
@@ -51,6 +49,8 @@ func main() {
 			return
 		}
 	default:
+		cfg := parseConfig()
+
 		validate(args, cfg)
 		create(args, cfg, localFS)
 	}
