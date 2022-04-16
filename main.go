@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"text/template"
@@ -67,7 +68,7 @@ func listAvailables(localFS fs.FS, kind string, parent string) {
 
 	suffix := ".tmpl"
 	if kind == "scripts" {
-		suffix = ".lua"
+		suffix = ""
 	}
 
 	for _, v := range systems {
@@ -84,7 +85,7 @@ func listAvailables(localFS fs.FS, kind string, parent string) {
 						files[parent] = []string{}
 					}
 
-					tmplName := strings.TrimSuffix(entry.Name(), suffix)
+					tmplName := strings.Split(strings.TrimSuffix(entry.Name(), suffix), ".")[0]
 
 					if !slices.Contains(files[parent], tmplName) {
 						files[parent] = append(files[parent], tmplName)
@@ -108,15 +109,41 @@ func listAvailables(localFS fs.FS, kind string, parent string) {
 	}
 
 	for k, v := range files {
-		fmt.Printf("%s: %s\n", k, strings.Join(v, ",")) //nolint
+		fmt.Printf("%s:\n%s\n", k, strings.Join(v, "\n")) //nolint
 	}
 }
 
-func execScript(scriptFile string, filename string, localFS fs.FS) {
-	script, err := fs.ReadFile(localFS, filepath.Join("scripts", scriptFile+".lua"))
+func getScript(v fs.FS, name, root string) string {
+	var script string
+	err := fs.WalkDir(v, root, func(path string, entry fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if !entry.IsDir() { //nolint
+			if strings.Contains(path, name) {
+				script = path
+
+				return nil
+			}
+		}
+
+		return nil
+	})
+	if err != nil {
+		if !errors.Is(err, os.ErrNotExist) {
+			log.Fatal(err)
+		}
+	}
+
+	return script
+}
+
+func execLua(localFS fs.FS, script, filename string) {
+	file, err := fs.ReadFile(localFS, script)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			log.Printf("Script not found: %s.", scriptFile)
+			log.Printf("Script not found: %s.", script)
 		}
 
 		return
@@ -125,11 +152,73 @@ func execScript(scriptFile string, filename string, localFS fs.FS) {
 	L := lua.NewState()
 	defer L.Close()
 
-	L.SetGlobal("Name", lua.LString(filename))
+	args := lua.LTable{}
+	args.Insert(1, lua.LString(filename))
 
-	err = L.DoString(string(script))
+	L.SetGlobal("args", &args)
+
+	err = L.DoString(string(file))
 	if err != nil {
 		log.Panic(err)
+	}
+}
+
+func execJs(script, filename string) {
+	wd, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cfgDir, err := os.UserConfigDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cmd := exec.Command("node", filepath.Join(cfgDir, "related", script), wd, filename)
+
+	b, err := cmd.Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if len(b) != 0 {
+		fmt.Println(string(b))
+	}
+}
+
+func execBinary(script, filename string) {
+	wd, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cfgDir, err := os.UserConfigDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cmd := exec.Command(filepath.Join(cfgDir, "related", script), wd, filename)
+
+	b, err := cmd.Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if len(b) != 0 {
+		fmt.Println(string(b))
+	}
+}
+
+func execScript(script string, filename string, localFS fs.FS) {
+	script = getScript(localFS, script, filepath.Join(".", "scripts"))
+
+	switch filepath.Ext(script) {
+	case ".lua":
+		execLua(localFS, script, filename)
+	case ".js":
+		execJs(script, filename)
+	case "":
+		execBinary(script, filename)
 	}
 }
 

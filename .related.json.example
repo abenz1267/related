@@ -4,7 +4,7 @@
             "name": "component",
             "template": "typescript/NextFuncComponent",
             "path": "./",
-            "pre": "typescript/MyCustomPreScript",
+            "pre": "typescript/MyCustomJS",
             "post": "typescript/MyCustomPostScript",
             "extension": "tsx"
         },

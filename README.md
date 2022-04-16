@@ -15,7 +15,7 @@ Place a "(.)related.json" file in your project folder. Content example:
             "name": "component",
             "template": "typescript/NextFuncComponent",
             "path": "./",
-            "pre": "typescript/MyCustomPreScript",
+            "pre": "typescript/MyCustomJS",
             "post": "typescript/MyCustomPostScript",
             "extension": "tsx"
         },
@@ -53,6 +53,8 @@ You can overwrite the default templates by simply placing a copy in your config 
 
 ### Scripts
 
+The following types are executable: lua scripts, javascript (via node), and binaries.
+
 Scripts must be placed in your config folder. F.e. on Linux `~/config/related/scripts/<parent>/<name>.lua`.
 
-You can execute \*.lua files by settings pre- and post-scripts in the type or group definition. Related will look for the \*.lua script and execute itaccording to the lifecycle. A global variable named `Name` will hold the name you provided to the initial command, f.e. `related group component MyComponent` will add `"MyComponent"` as a global variable to the script.
+You can execute scripts by settings pre- and post-scripts in the type or group definition. Related will look for the script and execute it according to the lifecycle. Command line arguments will be passed, where the first argument is the current working dir and the second one is the name you provided to the initial command, f.e. `related group component MyComponent` will add `"MyComponent"` as the second argument.
