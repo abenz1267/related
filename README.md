@@ -58,3 +58,8 @@ The following types are executable: lua scripts, javascript (via node), and bina
 Scripts must be placed in your config folder. F.e. on Linux `~/config/related/scripts/<parent>/<name>.lua`.
 
 You can execute scripts by settings pre- and post-scripts in the type or group definition. Related will look for the script and execute it according to the lifecycle. Command line arguments will be passed, where the first argument is the current working dir and the second one is the name you provided to the initial command, f.e. `related group component MyComponent` will add `"MyComponent"` as the second argument.
+
+### Todo:
+
+-   project-level templates/scripts
+-   a bit more validation pre-execution
