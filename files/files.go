@@ -11,7 +11,7 @@ import (
 func FindFile(name string, dir TypeDir) (string, fs.FS) {
 	systems := Systems()
 
-	path := filepath.Join(".", string(dir), name)
+	path := filepath.Join(string(dir), name)
 
 	for _, system := range systems {
 		if system == nil {
