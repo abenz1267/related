@@ -6,7 +6,7 @@ Related helps with common file-creation-based tasks. You can predefine single ty
 
 ## Installation
 
-`go install github.com/abenz1267/related@latest`
+Download binary for your platform from the releases here or simply build from source.
 
 ## Usage
 
@@ -18,14 +18,14 @@ Place a "(.)related.json" file in your project folder. Content example:
         {
             "name": "component",
             "template": "typescript/NextFuncComponent.tmpl",
-            "path": "./",
+            "path": "",
             "pre": "typescript/MyCustomJS.lua",
             "post": "typescript/MyCustomPostScript.lua",
             "suffix": ".tsx"
         },
         {
             "name": "cssmodule",
-            "path": "./styles/",
+            "path": "styles",
             "suffix": ".module.css"
         }
     ],
