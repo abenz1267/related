@@ -79,11 +79,11 @@ func Availables(kind string, parent string) map[string][]string {
 
 			if !entry.IsDir() {
 				if parent != "" {
-					parts := strings.Split(path, string(filepath.Separator))
-					result[parent] = append(result[parts[1]], strings.Join(parts[2:], string(filepath.Separator)))
+					parts := strings.Split(path, "/")
+					result[parent] = append(result[parts[1]], strings.Join(parts[2:], "/"))
 				} else {
-					parts := strings.Split(path, string(filepath.Separator))
-					result[parts[1]] = append(result[parts[1]], strings.Join(parts[2:], string(filepath.Separator)))
+					parts := strings.Split(path, "/")
+					result[parts[1]] = append(result[parts[1]], strings.Join(parts[2:], "/"))
 				}
 			}
 
