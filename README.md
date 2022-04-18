@@ -70,4 +70,4 @@ Passed command-line arguments:
 1. current working directory
 2. path
 3. filename
-4. extension
+4. suffix
