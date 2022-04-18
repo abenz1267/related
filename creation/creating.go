@@ -51,14 +51,14 @@ func createType(cfg config.Config, typename, name string) {
 
 	execScript(fragment.Pre, name, fragment)
 
-	err := os.MkdirAll(fragment.Path, 0o755)
+	path := filepath.Join(fragment.Path, name+fragment.Suffix)
+
+	err := os.MkdirAll(filepath.Dir(path), 0o755)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	filepath := filepath.Join(fragment.Path, name+fragment.Suffix)
-
-	file, err := os.OpenFile(filepath, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0o644)
+	file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0o644)
 	if err != nil {
 		log.Fatal(err)
 	}
