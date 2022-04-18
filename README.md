@@ -1,3 +1,5 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/abenz1267/related)](https://goreportcard.com/report/github.com/abenz1267/related)
+
 # Related - Create files based on individual definitions or groups
 
 Related helps with common file-creation-based tasks. You can predefine single types as well as groups. Scripts (lua, binary, javascript [needs node]) can be executed pre/post file creation as well as pre/post groups.
