@@ -31,13 +31,15 @@ func execLua(system fs.FS, fragment config.Fragment, path, name string) {
 		log.Fatal(err)
 	}
 
+	fullPath := filepath.Join(fragment.GetPath(), name)
+
 	args := lua.LTable{
 		Metatable: nil,
 	}
 	args.Insert(1, lua.LString(wd))
-	args.Insert(2, lua.LString(fragment.GetPath()))
-	args.Insert(3, lua.LString(name))
-	args.Insert(4, lua.LString(fragment.GetExt()))
+	args.Insert(2, lua.LString(filepath.Dir(fullPath)))
+	args.Insert(3, lua.LString(filepath.Base(fullPath)))
+	args.Insert(4, lua.LString(fragment.GetSuffix()))
 
 	state.SetGlobal("arg", &args)
 
@@ -47,13 +49,15 @@ func execLua(system fs.FS, fragment config.Fragment, path, name string) {
 	}
 }
 
-func execBinaryOrJavascript(fragment config.Fragment, path, filename string) {
+func execBinaryOrJavascript(fragment config.Fragment, path, name string) {
 	wd, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	args := []string{path, wd, fragment.GetPath(), filename, fragment.GetExt()}
+	fullPath := filepath.Join(fragment.GetPath(), name)
+
+	args := []string{path, wd, filepath.Dir(fullPath), filepath.Base(fullPath), fragment.GetSuffix()}
 
 	projectPath := filepath.Join(string(files.ProjectDir), path)
 

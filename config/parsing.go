@@ -18,7 +18,7 @@ const (
 type Fragment interface {
 	GetName() string
 	GetPath() string
-	GetExt() string
+	GetSuffix() string
 }
 
 type Type struct {
@@ -38,7 +38,7 @@ func (t Type) GetPath() string {
 	return t.Path
 }
 
-func (t Type) GetExt() string {
+func (t Type) GetSuffix() string {
 	return t.Suffix
 }
 
@@ -57,7 +57,7 @@ func (g Group) GetPath() string {
 	return ""
 }
 
-func (g Group) GetExt() string {
+func (g Group) GetSuffix() string {
 	return ""
 }
 

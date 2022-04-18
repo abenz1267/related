@@ -3,6 +3,7 @@ package creation
 import (
 	"bytes"
 	"log"
+	"path/filepath"
 	"text/template"
 
 	"github.com/abenz1267/related/files"
@@ -11,14 +12,14 @@ import (
 func getTemplateData(templateName, name string) bytes.Buffer {
 	var buffer bytes.Buffer
 
-	filepath, system := files.FindFile(templateName, files.TemplateDir)
+	path, system := files.FindFile(templateName, files.TemplateDir)
 
-	tmpl, err := template.ParseFS(system, filepath)
+	tmpl, err := template.ParseFS(system, path)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = tmpl.Execute(&buffer, name)
+	err = tmpl.Execute(&buffer, filepath.Base(name))
 	if err != nil {
 		log.Fatal(err)
 	}
