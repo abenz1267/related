@@ -26,7 +26,19 @@ func Create(args CmdArgs) {
 	cfg := config.ReadConfig()
 
 	if args.Kind == TypeCmd {
+		if len(cfg.Types) == 0 {
+			log.Println("<no types found>")
+
+			return
+		}
+
 		createType(cfg, args.Component, args.Name)
+
+		return
+	}
+
+	if len(cfg.Groups) == 0 {
+		log.Println("<no groups found>")
 
 		return
 	}
