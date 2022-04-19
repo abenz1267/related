@@ -1,6 +1,10 @@
 package config
 
 import (
+	"log"
+	"os"
+	"strings"
+
 	"github.com/abenz1267/related/files"
 	"golang.org/x/exp/slices"
 )
@@ -42,7 +46,45 @@ func Validate(cfg Config) ([]string, []string) {
 		}
 	}
 
+	var abort bool
+
+	ambiguousTypes := findAmbiguous(cfg.Types)
+
+	if len(ambiguousTypes) > 0 {
+		log.Printf("Ambiguous types: %s", strings.Join(ambiguousTypes, ", "))
+
+		abort = true
+	}
+
+	ambiguousGroups := findAmbiguous(cfg.Groups)
+
+	if len(ambiguousGroups) > 0 {
+		log.Printf("Ambiguous groups: %s", strings.Join(ambiguousGroups, ", "))
+
+		abort = true
+	}
+
+	if abort {
+		os.Exit(1)
+	}
+
 	return missingFiles, missingComponents
+}
+
+func findAmbiguous[T Fragment](fragments []T) []string {
+	exist := map[string]struct{}{}
+	ambigious := []string{}
+
+	for _, v := range fragments {
+		_, exists := exist[v.GetName()]
+		if !exists {
+			exist[v.GetName()] = struct{}{}
+		} else {
+			ambigious = append(ambigious, v.GetName())
+		}
+	}
+
+	return ambigious
 }
 
 func exists(name string, dir files.TypeDir) bool {

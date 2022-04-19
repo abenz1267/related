@@ -23,7 +23,7 @@ type CmdArgs struct {
 }
 
 func Create(args CmdArgs) {
-	cfg := config.ReadConfig()
+	cfg := config.ReadConfigs()
 
 	if args.Kind == TypeCmd {
 		if len(cfg.Types) == 0 {

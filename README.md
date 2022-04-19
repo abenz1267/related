@@ -10,7 +10,11 @@ Download binary for your platform from the releases here or simply build from so
 
 ## Usage
 
-Place a "(.)related.json" file in your project folder. Content example:
+Place a "(.)related.json" file in your project folder. You can also place `<file>.json` files in the `.related` folder. Wherever you like. Paths should be relative to the `.related` or `config/related` folder though. Type and group names can't be ambiguous, Related will check this on start.
+
+Splitting into multiple config files can help with organization.
+
+Content example:
 
 ```json
 {
@@ -44,10 +48,10 @@ If no template is provided, the file will be empty.
 
 ### Commands
 
-| Command                                | Function                                                                                    |
-| -------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `list <scripts or templates> <parent>` | Lists all available templates or scripts, grouped by parent-folder. The parent is optional. |
-| `<type or group> <name> <filename>`    | Creates the file(s) based on the type or group provided                                     |
+| Command                                                                  | Function                                                                                    |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| `list <scripts,templates,groups,types> <parent if scripts or templates>` | Lists all available templates or scripts, grouped by parent-folder. The parent is optional. |
+| `<type or group> <name> <filename>`                                      | Creates the file(s) based on the type or group provided                                     |
 
 ### Custom Files
 

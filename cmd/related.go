@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/abenz1267/related/config"
 	"github.com/abenz1267/related/creation"
-	"github.com/abenz1267/related/files"
 )
 
 func main() {
@@ -24,12 +24,12 @@ func main() {
 	args := os.Args[1:]
 
 	if len(args) == 0 {
-		log.Fatalf("Possible commands: %s\n", strings.Join([]string{files.ListCmd}, ", "))
+		log.Fatalf("Possible commands: %s\n", strings.Join([]string{config.ListCmd}, ", "))
 	}
 
 	switch args[0] {
-	case files.ListCmd:
-		files.List(args)
+	case config.ListCmd:
+		config.List(args)
 	case creation.TypeCmd, creation.GroupCmd:
 		cArgs := creation.CmdArgs{
 			Kind:      args[0],

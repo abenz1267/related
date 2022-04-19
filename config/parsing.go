@@ -3,11 +3,14 @@ package config
 import (
 	"encoding/json"
 	"errors"
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/abenz1267/related/files"
 )
 
 const (
@@ -66,29 +69,43 @@ type Config struct {
 	Groups []Group `json:"groups"`
 }
 
-func ReadConfig() Config {
-	workingDir, err := os.Getwd()
+func ReadConfigs() Config {
+	definitions := []string{DotConfigFile, ConfigFile}
+
+	err := filepath.Walk(string(files.ProjectDir), func(path string, info fs.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if !info.IsDir() && filepath.Ext(info.Name()) == ".json" {
+			definitions = append(definitions, path)
+		}
+
+		return nil
+	})
 	if err != nil {
 		log.Panic(err)
 	}
 
-	data, err := ioutil.ReadFile(filepath.Join(workingDir, DotConfigFile))
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			data, err = ioutil.ReadFile(filepath.Join(workingDir, ConfigFile))
-			if err != nil {
-				log.Panic(err)
-			}
-		} else {
-			log.Panic(err)
+	cfg := Config{
+		Types:  []Type{},
+		Groups: []Group{},
+	}
+
+	for _, v := range definitions {
+		definition := readConfig(v)
+
+		if definition.Groups != nil {
+			cfg.Groups = append(cfg.Groups, definition.Groups...)
+		}
+
+		if definition.Types != nil {
+			cfg.Types = append(cfg.Types, definition.Types...)
 		}
 	}
 
-	var cfg Config
-
-	err = json.Unmarshal(data, &cfg)
-	if err != nil {
-		log.Panic(err)
+	if len(cfg.Types) == 0 && len(cfg.Groups) == 0 {
+		log.Fatal("No definitions found.")
 	}
 
 	var abort bool
@@ -109,6 +126,26 @@ func ReadConfig() Config {
 
 	if abort {
 		os.Exit(1)
+	}
+
+	return cfg
+}
+
+func readConfig(path string) Config {
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return Config{} //nolint
+		}
+
+		log.Panic(err)
+	}
+
+	var cfg Config
+
+	err = json.Unmarshal(data, &cfg)
+	if err != nil {
+		log.Panic(err)
 	}
 
 	return cfg

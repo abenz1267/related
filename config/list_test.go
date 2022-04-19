@@ -1,8 +1,9 @@
-package files_test
+package config_test
 
 import (
 	"testing"
 
+	"github.com/abenz1267/related/config"
 	"github.com/abenz1267/related/files"
 	"github.com/abenz1267/related/testingcommons"
 	"github.com/stretchr/testify/assert"
@@ -30,7 +31,7 @@ func TestFiles(t *testing.T) {
 	}
 
 	for _, v := range tests {
-		res := files.Availables(string(v.dir), "")
+		res := config.Availables(string(v.dir), "")
 
 		for _, n := range v.expected {
 			assert.True(t, slices.Contains(res[testingcommons.Parent], n))
