@@ -23,12 +23,12 @@ func TestFindFile(t *testing.T) {
 		{
 			file:     testingcommons.GetName(testingcommons.ProjectTemplate),
 			dir:      files.TemplateDir,
-			expected: filepath.Join(testingcommons.TemplateDir, testingcommons.Parent, testingcommons.ProjectTemplate),
+			expected: files.NormalizeForFS(filepath.Join(testingcommons.TemplateDir, testingcommons.Parent, testingcommons.ProjectTemplate)),
 		},
 		{
 			file:     testingcommons.GetName(testingcommons.ConfigTemplate),
 			dir:      files.TemplateDir,
-			expected: filepath.Join(testingcommons.TemplateDir, testingcommons.Parent, testingcommons.ConfigTemplate),
+			expected: files.NormalizeForFS(filepath.Join(testingcommons.TemplateDir, testingcommons.Parent, testingcommons.ConfigTemplate)),
 		},
 		{
 			file:     "parent/missing",
@@ -38,12 +38,12 @@ func TestFindFile(t *testing.T) {
 		{
 			file:     testingcommons.GetName(testingcommons.ProjectScript),
 			dir:      files.ScriptDir,
-			expected: filepath.Join(testingcommons.ScriptDir, testingcommons.Parent, testingcommons.ProjectScript),
+			expected: files.NormalizeForFS(filepath.Join(testingcommons.ScriptDir, testingcommons.Parent, testingcommons.ProjectScript)),
 		},
 		{
 			file:     testingcommons.GetName(testingcommons.ConfigScript),
 			dir:      files.ScriptDir,
-			expected: filepath.Join(testingcommons.ScriptDir, testingcommons.Parent, testingcommons.ConfigScript),
+			expected: files.NormalizeForFS(filepath.Join(testingcommons.ScriptDir, testingcommons.Parent, testingcommons.ConfigScript)),
 		},
 		{
 			file:     "parent/missing.lua",
