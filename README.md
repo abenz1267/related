@@ -10,6 +10,8 @@ Download binary for your platform from the releases here or simply build from so
 
 ## Usage
 
+!! You can use either _.json or _.yaml for configuration files !!
+
 Place a "(.)related.json" file in your project folder. You can also place `<file>.json` files in the `.related` folder. Wherever you like. Paths should be relative to the `.related` or `config/related` folder though. Type and group names can't be ambiguous, Related will check this on start.
 
 Splitting into multiple config files can help with organization.

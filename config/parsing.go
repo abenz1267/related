@@ -11,6 +11,8 @@ import (
 	"strings"
 
 	"github.com/abenz1267/related/files"
+	"golang.org/x/exp/slices"
+	"gopkg.in/yaml.v3"
 )
 
 const (
@@ -69,6 +71,8 @@ type Config struct {
 	Groups []Group `json:"groups"`
 }
 
+var validExtensions = []string{".json", ".yaml"}
+
 func ReadConfigs() Config {
 	definitions := []string{DotConfigFile, ConfigFile}
 
@@ -77,7 +81,7 @@ func ReadConfigs() Config {
 			return err
 		}
 
-		if !info.IsDir() && filepath.Ext(info.Name()) == ".json" {
+		if !info.IsDir() && slices.Contains(validExtensions, filepath.Ext(info.Name())) {
 			definitions = append(definitions, path)
 		}
 
@@ -143,7 +147,12 @@ func readConfig(path string) Config {
 
 	var cfg Config
 
-	err = json.Unmarshal(data, &cfg)
+	if strings.HasSuffix(path, validExtensions[0]) {
+		err = json.Unmarshal(data, &cfg)
+	} else {
+		err = yaml.Unmarshal(data, &cfg)
+	}
+
 	if err != nil {
 		log.Panic(err)
 	}
