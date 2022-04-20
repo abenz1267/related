@@ -48,12 +48,31 @@ Content example:
 
 If no template is provided, the file will be empty.
 
+### Type-Inheritance
+
+You can inherit types like this:
+
+```yaml
+types:
+    - name: parent
+      suffix: .tsx
+      path: components
+      template: typescript/rfc.tmpl
+    - name: parent/other
+      path: othercomponents
+```
+
+The `path` will be relative to the `parent` type, so in this case the `path` of `parent/other` will be `components/othercomponents`.
+Parents can be any type defined wherever. They don't have to be in the same file.
+
+**Important**: properties can be set to an empty string by overwriting it with `CLEAR`, so f.e. `path: CLEAR` will set the path to `""` instead of `"components"`
+
 ### Commands
 
-| Command                                                                  | Function                                                                                    |
-| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
-| `list <scripts,templates,groups,types> <parent if scripts or templates>` | Lists all available templates or scripts, grouped by parent-folder. The parent is optional. |
-| `<type or group> <name> <filename>`                                      | Creates the file(s) based on the type or group provided                                     |
+| Command                                                                  | Function                                                                                                                                   |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `list <scripts,templates,groups,types> <parent if scripts or templates>` | Lists all available template/scripts, grouped by parent-folder, or groups and types. The parent is optional for listing templates/scripts. |
+| `<type or group> <name> <filename>`                                      | Creates the file(s) based on the type or group provided                                                                                    |
 
 ### Custom Files
 
@@ -87,5 +106,5 @@ Passed command-line arguments:
 
 ### Hints
 
-1. A failure creating a single type won't result in the whole group-creating aborting. This means if f.e. you create a single type and later want to create a group but the type has already been created, it'll simply print out an error and continue creating the rest of the types.
-2. A failures trying to execute a script will result in abortion of the type at that certain point. F.e. a failure in a script running pre-creation will stop the creation process there.
+1. A failure creating a single type won't result in the whole group-creation aborting. This means if f.e. you create a single type and later want to create a group but the type has already been created, it'll simply print out an error and continue creating the rest of the types.
+2. A failures trying to execute a script will result in abortion of the type at that certain lifecycle. F.e. a failure in a script running pre-creation will stop the creation process there.

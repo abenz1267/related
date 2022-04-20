@@ -50,7 +50,7 @@ func Create(args CmdArgs) {
 }
 
 func createGroup(cfg config.Config, args CmdArgs) {
-	group := getFragment(cfg.Groups, args.Component)
+	group := config.GetFragment(cfg.Groups, args.Component)
 
 	execScript(group.Pre, args.Name, group)
 
@@ -64,7 +64,7 @@ func createGroup(cfg config.Config, args CmdArgs) {
 func createType(cfg config.Config, typename, name string) {
 	defer RecoverPrint()
 
-	fragment := getFragment(cfg.Types, typename)
+	fragment := config.GetFragment(cfg.Types, typename)
 
 	execScript(fragment.Pre, name, fragment)
 
@@ -88,16 +88,4 @@ func writeFile(fragment config.Type, name string) {
 	}
 
 	log.Printf("created: %s\n", path)
-}
-
-func getFragment[T config.Fragment](fragments []T, name string) T { //nolint
-	var res T
-
-	for _, v := range fragments {
-		if v.GetName() == name {
-			res = v
-		}
-	}
-
-	return res
 }
