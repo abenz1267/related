@@ -1,3 +1,7 @@
+github.com/abenz1267/gonerics v0.0.1 h1:p1h/gejHnMGGfwiqkVEyccwV2SD08xyBNNLjvqp52M0=
+github.com/abenz1267/gonerics v0.0.1/go.mod h1:rt3ZtbZJKu7cQsN3BwCO1mICl/BAXFMzTA4E7zZeN/o=
+github.com/abenz1267/gonerics v0.0.2 h1:P3DetR4TaKwbRmKBMARLiHplAODop9KMKWvaj2yB4C0=
+github.com/abenz1267/gonerics v0.0.2/go.mod h1:DbaIuz8RbvvF64yR3hVmLFkRM5DyJezwg/qRwFdWRtw=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=
 github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e/go.mod h1:nSuG5e5PlCu98SY8svDHJxuZscDgtXS6KTTbou5AhLI=
 github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1/go.mod h1:Q3SI9o4m/ZMnBNeIyt5eFwwo7qiLfzFZmjNmxjkiQlU=

@@ -2,10 +2,10 @@ package creation
 
 import (
 	"bytes"
-	"log"
 	"path/filepath"
 	"text/template"
 
+	. "github.com/abenz1267/gonerics" //nolint
 	"github.com/abenz1267/related/files"
 )
 
@@ -14,15 +14,9 @@ func getTemplateData(templateName, name string) bytes.Buffer {
 
 	path, system := files.FindFile(templateName, files.TemplateDir)
 
-	tmpl, err := template.ParseFS(system, path)
-	if err != nil {
-		log.Fatal(err)
-	}
+	tmpl := TryResult(template.ParseFS(system, path))
 
-	err = tmpl.Execute(&buffer, filepath.Base(name))
-	if err != nil {
-		log.Fatal(err)
-	}
+	Try(tmpl.Execute(&buffer, filepath.Base(name)))
 
 	return buffer
 }

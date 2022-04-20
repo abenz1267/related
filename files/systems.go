@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/abenz1267/gonerics"
 )
 
 const (
@@ -23,7 +25,7 @@ type (
 var configDir SystemDir //nolint
 
 func init() { //nolint
-	configDir = UserConfigDir()
+	configDir = userConfigDir()
 }
 
 func SetConfigDir(dir string) {
@@ -34,7 +36,7 @@ func configFS() fs.FS {
 	path := filepath.Join(string(configDir), string(ConfigDir))
 
 	if exists(path) {
-		return os.DirFS(string(path))
+		return os.DirFS(path)
 	}
 
 	return nil
@@ -65,11 +67,8 @@ func Systems() []fs.FS {
 	return []fs.FS{projectFS(), configFS()}
 }
 
-func UserConfigDir() SystemDir {
-	dir, err := os.UserConfigDir()
-	if err != nil {
-		log.Fatal(err)
-	}
+func userConfigDir() SystemDir {
+	dir := gonerics.TryResult(os.UserConfigDir())
 
 	return SystemDir(dir)
 }

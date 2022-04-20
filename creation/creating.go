@@ -5,15 +5,18 @@ import (
 	"os"
 	"path/filepath"
 
+	. "github.com/abenz1267/gonerics" //nolint
 	"github.com/abenz1267/related/config"
 )
 
 const (
-	TypeCmd   = "type"
-	GroupCmd  = "group"
-	LuaExt    = ".lua"
-	JsExt     = ".js"
-	BinaryExt = ""
+	TypeCmd    = "type"
+	GroupCmd   = "group"
+	LuaExt     = ".lua"
+	JsExt      = ".js"
+	BinaryExt  = ""
+	PermFolder = 0o755
+	PermFile   = 0o644
 )
 
 type CmdArgs struct {
@@ -59,33 +62,32 @@ func createGroup(cfg config.Config, args CmdArgs) {
 }
 
 func createType(cfg config.Config, typename, name string) {
+	defer RecoverPrint()
+
 	fragment := getFragment(cfg.Types, typename)
 
 	execScript(fragment.Pre, name, fragment)
 
+	writeFile(fragment, name)
+
+	execScript(fragment.Post, name, fragment)
+}
+
+func writeFile(fragment config.Type, name string) {
 	path := filepath.Join(fragment.Path, name+fragment.Suffix)
 
-	err := os.MkdirAll(filepath.Dir(path), 0o755)
-	if err != nil {
-		log.Fatal(err)
-	}
+	Try(os.MkdirAll(filepath.Dir(path), PermFolder))
 
-	file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0o644)
-	if err != nil {
-		log.Fatal(err)
-	}
+	file := TryResult(os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_EXCL, PermFile))
 	defer file.Close()
 
 	if fragment.Template != "" {
 		buffer := getTemplateData(fragment.Template, name)
 
-		_, err := file.Write(buffer.Bytes())
-		if err != nil {
-			log.Panic(err)
-		}
+		TryResult(file.Write(buffer.Bytes()))
 	}
 
-	execScript(fragment.Post, name, fragment)
+	log.Printf("created: %s\n", path)
 }
 
 func getFragment[T config.Fragment](fragments []T, name string) T { //nolint

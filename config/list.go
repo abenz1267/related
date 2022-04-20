@@ -1,14 +1,13 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"io/fs"
 	"log"
-	"os"
 	"path/filepath"
 	"strings"
 
+	. "github.com/abenz1267/gonerics" //nolint
 	"github.com/abenz1267/related/files"
 	"golang.org/x/exp/slices"
 )
@@ -21,7 +20,7 @@ const (
 )
 
 func List(args []string) {
-	types := []string{"templates", "scripts", "groups", "types"}
+	types := Slice("templates", "scripts", "groups", "types")
 
 	switch len(args) {
 	case ListInvalid:
@@ -79,6 +78,8 @@ func fragments[T Fragment](fragments []T, parent string) map[string][]string {
 }
 
 func Availables(kind string, parent string) map[string][]string {
+	defer RecoverFatal()
+
 	systems := files.Systems()
 
 	result := map[string][]string{}
@@ -93,7 +94,7 @@ func Availables(kind string, parent string) map[string][]string {
 			continue
 		}
 
-		err := fs.WalkDir(v, root, func(path string, entry fs.DirEntry, err error) error {
+		Try(fs.WalkDir(v, root, func(path string, entry fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
@@ -109,12 +110,7 @@ func Availables(kind string, parent string) map[string][]string {
 			}
 
 			return nil
-		})
-		if err != nil {
-			if !errors.Is(err, os.ErrNotExist) {
-				log.Fatal(err)
-			}
-		}
+		}))
 	}
 
 	if len(result) == 0 {

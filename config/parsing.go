@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	. "github.com/abenz1267/gonerics" //nolint
 	"github.com/abenz1267/related/files"
 	"golang.org/x/exp/slices"
 	"gopkg.in/yaml.v3"
@@ -74,9 +75,11 @@ type Config struct {
 var validExtensions = []string{".json", ".yaml"}
 
 func ReadConfigs() Config {
-	definitions := []string{DotConfigFile, ConfigFile}
+	defer RecoverFatal()
 
-	err := filepath.Walk(string(files.ProjectDir), func(path string, info fs.FileInfo, err error) error {
+	definitions := Slice(DotConfigFile, ConfigFile)
+
+	Try(filepath.Walk(string(files.ProjectDir), func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -86,10 +89,7 @@ func ReadConfigs() Config {
 		}
 
 		return nil
-	})
-	if err != nil {
-		log.Panic(err)
-	}
+	}))
 
 	cfg := Config{
 		Types:  []Type{},
@@ -136,6 +136,8 @@ func ReadConfigs() Config {
 }
 
 func readConfig(path string) Config {
+	defer RecoverPanic()
+
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
@@ -148,13 +150,9 @@ func readConfig(path string) Config {
 	var cfg Config
 
 	if strings.HasSuffix(path, validExtensions[0]) {
-		err = json.Unmarshal(data, &cfg)
+		Try(json.Unmarshal(data, &cfg))
 	} else {
-		err = yaml.Unmarshal(data, &cfg)
-	}
-
-	if err != nil {
-		log.Panic(err)
+		Try(yaml.Unmarshal(data, &cfg))
 	}
 
 	return cfg

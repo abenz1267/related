@@ -8,83 +8,67 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	. "github.com/abenz1267/gonerics" //nolint
 	"github.com/abenz1267/related/config"
 	"github.com/abenz1267/related/files"
 	lua "github.com/yuin/gopher-lua"
 )
 
-func execLua(system fs.FS, fragment config.Fragment, path, name string) {
-	file, err := fs.ReadFile(system, path)
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			log.Printf("Script not found: %s.", filepath.Base(path))
-		}
+const (
+	LuaArgWorkingDir = 1
+	LuaArgPath       = 2
+	LuaArgName       = 3
+	LuaArgSuffix     = 4
+)
 
-		return
-	}
+func execLua(system fs.FS, fragment config.Fragment, path, name string) {
+	file := TryResult(fs.ReadFile(system, path))
 
 	state := lua.NewState()
 	defer state.Close()
 
-	wd, err := os.Getwd()
-	if err != nil {
-		log.Fatal(err)
-	}
+	workingDir := TryResult(os.Getwd())
 
 	fullPath := filepath.Join(fragment.GetPath(), name)
 
 	args := lua.LTable{
 		Metatable: nil,
 	}
-	args.Insert(1, lua.LString(wd))
-	args.Insert(2, lua.LString(filepath.Dir(fullPath)))
-	args.Insert(3, lua.LString(filepath.Base(fullPath)))
-	args.Insert(4, lua.LString(fragment.GetSuffix()))
+	args.Insert(LuaArgWorkingDir, lua.LString(workingDir))
+	args.Insert(LuaArgPath, lua.LString(filepath.Dir(fullPath)))
+	args.Insert(LuaArgName, lua.LString(filepath.Base(fullPath)))
+	args.Insert(LuaArgSuffix, lua.LString(fragment.GetSuffix()))
 
 	state.SetGlobal("arg", &args)
 
-	err = state.DoString(string(file))
-	if err != nil {
-		log.Panic(err)
-	}
+	Try(state.DoString(string(file)))
 }
 
 func execBinaryOrJavascript(fragment config.Fragment, path, name string) {
-	wd, err := os.Getwd()
-	if err != nil {
-		log.Fatal(err)
-	}
+	wd := TryResult(os.Getwd())
 
 	fullPath := filepath.Join(fragment.GetPath(), name)
 
-	args := []string{path, wd, filepath.Dir(fullPath), filepath.Base(fullPath), fragment.GetSuffix()}
+	args := Slice(path, wd, filepath.Dir(fullPath), filepath.Base(fullPath), fragment.GetSuffix())
 
 	projectPath := filepath.Join(string(files.ProjectDir), path)
 
-	_, err = os.Stat(projectPath)
+	_, err := os.Stat(projectPath)
 	if !errors.Is(err, os.ErrNotExist) {
 		args[0] = projectPath
 	} else {
-		wd, wdErr := os.UserConfigDir()
-		if wdErr != nil {
-			log.Fatal(err)
-		}
+		userConfigDir := TryResult(os.UserConfigDir())
 
-		args[0] = filepath.Join(wd, string(files.ConfigDir), path)
+		args[0] = filepath.Join(userConfigDir, string(files.ConfigDir), path)
 	}
 
 	if filepath.Ext(path) == JsExt {
-		args = append([]string{"node"}, args...)
+		args = append(Slice("node"), args...)
 	}
 
 	cmd := exec.Command(args[0], args[1:]...)
 
-	res, err := cmd.Output()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if len(res) != 0 {
+	if res := TryResult(cmd.Output()); len(res) != 0 {
 		log.Println(string(res))
 	}
 }
@@ -95,6 +79,8 @@ func execScript(script string, name string, fragment config.Fragment) {
 	}
 
 	path, system := files.FindFile(script, files.ScriptDir)
+
+	log.Printf("executing: %s", script)
 
 	switch filepath.Ext(script) {
 	case LuaExt:
