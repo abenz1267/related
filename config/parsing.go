@@ -109,7 +109,7 @@ func ReadConfigs() Config {
 	}
 
 	if len(cfg.Types) == 0 && len(cfg.Groups) == 0 {
-		log.Fatal("No definitions found.")
+		log.Panic("No definitions found.")
 	}
 
 	var abort bool
