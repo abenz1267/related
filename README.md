@@ -10,7 +10,7 @@ Download binary for your platform from the releases here or simply build from so
 
 ## Usage
 
-!! You can use either *.json or *.yaml for configuration files !!
+!! You can use either _.json or _.yaml for configuration files !!
 
 Place a "(.)related.json" file in your project folder. You can also place `<file>.json` files in the `.related` folder. Wherever you like. Paths should be relative to the `.related` or `config/related` folder though. Type and group names can't be ambiguous, Related will check this on start.
 
@@ -63,7 +63,14 @@ Related will prioritize project-level files over config ones.
 
 ### Templates
 
-Templates are vanilla Golang templates, only data passed is the filename you provided. It can be accessed via `{{.}}` in the template.
+Templates are vanilla Golang templates. Data passed to templates:
+
+| data              | read via          |
+| ----------------- | ----------------- |
+| working directory | `{{.workingDir}}` |
+| path              | `{{.path}}`       |
+| name              | `{{.name}}`       |
+| suffix            | `{{.suffix}}`     |
 
 ### Scripts
 
@@ -77,3 +84,8 @@ Passed command-line arguments:
 2. path
 3. filename
 4. suffix
+
+### Hints
+
+1. A failure creating a single type won't result in the whole group-creating aborting. This means if f.e. you create a single type and later want to create a group but the type has already been created, it'll simply print out an error and continue creating the rest of the types.
+2. A failures trying to execute a script will result in abortion of the type at that certain point. F.e. a failure in a script running pre-creation will stop the creation process there.

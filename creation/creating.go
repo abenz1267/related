@@ -82,7 +82,7 @@ func writeFile(fragment config.Type, name string) {
 	defer file.Close()
 
 	if fragment.Template != "" {
-		buffer := getTemplateData(fragment.Template, name)
+		buffer := getTemplateData(fragment, name)
 
 		TryResult(file.Write(buffer.Bytes()))
 	}
