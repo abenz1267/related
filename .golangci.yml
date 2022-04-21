@@ -1,0 +1,6 @@
+run:
+  concurrency: 8
+
+linters:
+  disable:
+    - exhaustivestruct

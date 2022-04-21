@@ -1,8 +1,7 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
+	"strings"
 	"time"
 
 	"github.com/briandowns/spinner"
@@ -10,24 +9,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var rootCmd = &cobra.Command{
-	Use:   "related",
-	Short: "Related is a file generator.",
-	Long: `Related is a tool that helps you quickly create files based on definitions. For more information
-	checkout https://github.com/abenz1267/related`,
+var List = &cobra.Command{
+	Use:   "list [type to list]",
+	Short: "list templates, scripts, types or groups",
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		s := spinner.New(spinner.CharSets[41], 100*time.Millisecond) // Build our new spinner
 		s.Suffix = "  Processing..."
 		s.Start()                   // Start the spinner
 		time.Sleep(4 * time.Second) // Run for some time to simulate work
 		s.Stop()
-		color.Green("Successfully Finished\n")
+		color.Green("Echo: " + strings.Join(args, " "))
 	},
-}
-
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
 }
