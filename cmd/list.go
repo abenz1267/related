@@ -1,28 +1,35 @@
 package cmd
 
 import (
-	"log"
-
-	"github.com/abenz1267/related/config"
+	"github.com/abenz1267/related/list"
 	"github.com/spf13/cobra"
 )
 
 var List = &cobra.Command{
-	Use:   "list [type to list]",
+	Use:   "list [fragments, groups, templates, scripts]",
 	Short: "list templates, scripts, types or groups",
-	// Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		// s := spinner.New(spinner.CharSets[41], 100*time.Millisecond) // Build our new spinner
-		// s.Suffix = "  Processing..."
-		// s.Start()                   // Start the spinner
-		// time.Sleep(4 * time.Second) // Run for some time to simulate work
-		// s.Stop()
-		// color.Green("Echo: " + strings.Join(args, " "))
-		config, err := config.Get()
-		if err != nil {
-			log.Fatal(err)
-		}
+}
 
-		log.Printf("%+v", config)
+var Fragments = &cobra.Command{
+	Use:   "fragments",
+	Short: "list all available fragments",
+	Run: func(cmd *cobra.Command, args []string) {
+		list.Fragments()
+	},
+}
+
+var Parents = &cobra.Command{
+	Use:   "parents",
+	Short: "list all available parents",
+	Run: func(cmd *cobra.Command, args []string) {
+		list.Parents()
+	},
+}
+
+var Groups = &cobra.Command{
+	Use:   "groups",
+	Short: "list all available groups",
+	Run: func(cmd *cobra.Command, args []string) {
+		list.Groups()
 	},
 }
