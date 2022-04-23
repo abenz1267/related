@@ -19,8 +19,11 @@ func main() {
 	cmd.List.AddCommand(cmd.Groups)
 	cmd.List.AddCommand(cmd.Parents)
 
+	cmd.Create.AddCommand(cmd.Template)
+
 	root.AddCommand(cmd.List)
 	root.AddCommand(cmd.ValidateConfig)
+	root.AddCommand(cmd.Create)
 
 	if err := root.Execute(); err != nil {
 		log.Panic(err)
