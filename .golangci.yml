@@ -1,6 +1,10 @@
 run:
   concurrency: 8
 
+output:
+  print-linter-name: false
+
 linters:
   disable:
     - exhaustivestruct
+    - varnamelen
