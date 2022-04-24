@@ -13,7 +13,7 @@ var List = &cobra.Command{
 var Fragments = &cobra.Command{
 	Use:   "fragments",
 	Short: "list all available fragments",
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		list.Fragments()
 	},
 }
@@ -21,7 +21,7 @@ var Fragments = &cobra.Command{
 var Parents = &cobra.Command{
 	Use:   "parents",
 	Short: "list all available parents",
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		list.Parents()
 	},
 }
@@ -29,7 +29,7 @@ var Parents = &cobra.Command{
 var Groups = &cobra.Command{
 	Use:   "groups",
 	Short: "list all available groups",
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		list.Groups()
 	},
 }
