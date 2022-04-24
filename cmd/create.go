@@ -7,12 +7,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var Create = &cobra.Command{ //nolint
+func init() {
+	createCmd.AddCommand(createTemplate)
+}
+
+var createCmd = &cobra.Command{ //nolint
 	Use:   "create [template, script, group, fragment]",
 	Short: "create template, script, group, fragment",
 }
 
-var Template = &cobra.Command{ //nolint
+var createTemplate = &cobra.Command{ //nolint
 	Use:   "template [source] [destination]",
 	Short: "create template for given file",
 	Args:  cobra.MinimumNArgs(2),
@@ -32,6 +36,6 @@ var Template = &cobra.Command{ //nolint
 }
 
 func init() {
-	Template.Flags().BoolP("global", "g", false, "if set, generated file will be placed in user configuration folder")
-	Template.Flags().BoolP("result", "r", false, "if set, the path to the generated template will be printed back")
+	createTemplate.Flags().BoolP("global", "g", false, "if set, generated file will be placed in user configuration folder")
+	createTemplate.Flags().BoolP("result", "r", false, "if set, the path to the generated template will be printed back")
 }

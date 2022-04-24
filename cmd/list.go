@@ -5,12 +5,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var List = &cobra.Command{
+func init() {
+	listCmd.AddCommand(listFragmentsCmd)
+	listCmd.AddCommand(listGroupsCmd)
+	listCmd.AddCommand(listParentsCmd)
+}
+
+var listCmd = &cobra.Command{
 	Use:   "list [fragments, groups, templates, scripts]",
 	Short: "list templates, scripts, types or groups",
 }
 
-var Fragments = &cobra.Command{
+var listFragmentsCmd = &cobra.Command{
 	Use:   "fragments",
 	Short: "list all available fragments",
 	Run: func(_ *cobra.Command, _ []string) {
@@ -18,7 +24,7 @@ var Fragments = &cobra.Command{
 	},
 }
 
-var Parents = &cobra.Command{
+var listParentsCmd = &cobra.Command{
 	Use:   "parents",
 	Short: "list all available parents",
 	Run: func(_ *cobra.Command, _ []string) {
@@ -26,7 +32,7 @@ var Parents = &cobra.Command{
 	},
 }
 
-var Groups = &cobra.Command{
+var listGroupsCmd = &cobra.Command{
 	Use:   "groups",
 	Short: "list all available groups",
 	Run: func(_ *cobra.Command, _ []string) {
