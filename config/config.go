@@ -35,18 +35,11 @@ func (fragment *Fragment) inheritFrom(parent Fragment) {
 	fragment.Template = clearOrInherit(fragment.Template, parent.Template)
 	fragment.Suffix = clearOrInherit(fragment.Suffix, parent.Suffix)
 
-	path := filepath.Join(parent.Path, fragment.Path)
-
-	if strings.Contains(path, Clear) {
-		paths := strings.Split(path, Clear)
-
-		if len(paths) > 1 {
-			fragment.Path = paths[1]
-		} else {
-			fragment.Path = ""
-		}
+	if strings.Contains(fragment.Path, Clear) {
+		fragment.Path = strings.TrimPrefix(fragment.Path, Clear)
+		fragment.Path = strings.TrimPrefix(fragment.Path, "/")
 	} else {
-		fragment.Path = path
+		fragment.Path = filepath.Join(parent.Path, fragment.Path)
 	}
 }
 
