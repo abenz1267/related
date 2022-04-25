@@ -9,7 +9,7 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-const Clear = "CLEAR"
+const Clear = "<clear>"
 
 type Fragment struct {
 	Name       string `json:"name" yaml:"name"`
@@ -17,7 +17,7 @@ type Fragment struct {
 	Template   string `json:"template" yaml:"template"`
 	Pre        string `json:"pre" yaml:"pre"`
 	Post       string `json:"post" yaml:"post"`
-	Suffix     string `json:"suffix" yaml:"suffix"`
+	Filename   string `json:"filename" yaml:"filename"`
 	ConfigFile string
 }
 
@@ -33,7 +33,7 @@ func (fragment *Fragment) inheritFrom(parent Fragment) {
 	fragment.Post = clearOrInherit(fragment.Post, parent.Post)
 	fragment.Pre = clearOrInherit(fragment.Pre, parent.Pre)
 	fragment.Template = clearOrInherit(fragment.Template, parent.Template)
-	fragment.Suffix = clearOrInherit(fragment.Suffix, parent.Suffix)
+	fragment.Filename = clearOrInherit(fragment.Filename, parent.Filename)
 
 	if strings.Contains(fragment.Path, Clear) {
 		fragment.Path = strings.TrimPrefix(fragment.Path, Clear)
@@ -130,7 +130,7 @@ func (config *Config) merge(other Config) {
 func (config *Config) transform() error {
 	for i, v := range config.Fragments {
 		if strings.Contains(v.Name, "/") {
-			parent, err := config.getFragment(strings.Split(v.Name, "/")[0], config.Parents)
+			parent, err := config.GetFragment(strings.Split(v.Name, "/")[0], config.Parents)
 			if err != nil {
 				return fmt.Errorf("parent not found: %w", err)
 			}
@@ -144,7 +144,7 @@ func (config *Config) transform() error {
 
 var ErrFragmentNotFound = errors.New("fragment not found")
 
-func (config Config) getFragment(name string, list []Fragment) (Fragment, error) {
+func (config Config) GetFragment(name string, list []Fragment) (Fragment, error) {
 	for _, v := range list {
 		if v.Name == name {
 			return v, nil
