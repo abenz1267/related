@@ -44,13 +44,11 @@ func (fragment *Fragment) inheritFrom(parent Fragment) {
 }
 
 func clearOrInherit(child, parent string) string {
-	if child == "" {
-		child = parent
-	} else if child == Clear {
-		child = ""
+	if child == Clear {
+		return ""
 	}
 
-	return child
+	return parent
 }
 
 type Group struct {
@@ -142,7 +140,10 @@ func (config *Config) transform() error {
 	return nil
 }
 
-var ErrFragmentNotFound = errors.New("fragment not found")
+var (
+	ErrFragmentNotFound = errors.New("fragment not found")
+	ErrGroupNotFound    = errors.New("group not found")
+)
 
 func (config Config) GetFragment(name string, list []Fragment) (Fragment, error) {
 	for _, v := range list {
@@ -152,6 +153,16 @@ func (config Config) GetFragment(name string, list []Fragment) (Fragment, error)
 	}
 
 	return Fragment{}, ErrFragmentNotFound
+}
+
+func (config Config) GetGroup(name string, list []Group) (Group, error) {
+	for _, v := range list {
+		if v.Name == name {
+			return v, nil
+		}
+	}
+
+	return Group{}, ErrGroupNotFound
 }
 
 func (config *Config) sort() {
