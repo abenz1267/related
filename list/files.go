@@ -11,6 +11,7 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+// unreliable for anything that doesn't end with <name>.<ext>.
 func Files(file string) error {
 	cfg, err := config.Get()
 	if err != nil {

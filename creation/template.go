@@ -2,7 +2,6 @@ package creation
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -24,7 +23,7 @@ func Template(result bool, global bool, src, dest string) error {
 		destFolder = filepath.Join(userConfig, "related", "templates")
 	}
 
-	source, err := ioutil.ReadFile(src)
+	source, err := os.ReadFile(src)
 	if err != nil {
 		return fmt.Errorf("couldn't read source file: %w", err)
 	}
@@ -36,7 +35,7 @@ func Template(result bool, global bool, src, dest string) error {
 		return fmt.Errorf("couldn't create destination folder(s): %w", err)
 	}
 
-	err = ioutil.WriteFile(dest, source, PermFile)
+	err = os.WriteFile(dest, source, PermFile)
 	if err != nil {
 		return fmt.Errorf("couldn't write template file: %w", err)
 	}
