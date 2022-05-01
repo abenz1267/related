@@ -1,9 +1,15 @@
 package creation
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
+	"text/template"
+
+	"github.com/abenz1267/related/config"
 )
 
 const (
@@ -45,4 +51,50 @@ func Template(result bool, global bool, src, dest string) error {
 	}
 
 	return nil
+}
+
+func getTemplate(name string, fragment config.Fragment) (bytes.Buffer, error) {
+	var buffer bytes.Buffer
+
+	tmplFile := strings.ReplaceAll(fragment.Template, "/", string(filepath.Separator))
+
+	path := filepath.Join(".related", "templates", tmplFile)
+
+	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+		cfgDir, err := os.UserConfigDir()
+		if err != nil {
+			return buffer, fmt.Errorf("couldn't execute template: %w", err)
+		}
+
+		path = filepath.Join(cfgDir, "related", "templates", tmplFile)
+
+		_, err = os.Stat(path)
+		if err != nil {
+			return buffer, fmt.Errorf("couldn't execute template: %w", err)
+		}
+	}
+
+	wDir, err := os.Getwd()
+	if err != nil {
+		return buffer, nil
+	}
+
+	data := map[string]string{
+		"wdir": wDir,
+		"path": filepath.Dir(fragment.File),
+		"name": name,
+		"ext":  strings.Join(strings.Split(filepath.Base(fragment.File), ".")[1:], ""),
+	}
+
+	tmpl, err := template.ParseFiles(path)
+	if err != nil {
+		return buffer, fmt.Errorf("couldn't execute template: %w", err)
+	}
+
+	err = tmpl.Execute(&buffer, &data)
+	if err != nil {
+		return buffer, fmt.Errorf("couldn't execute template: %w", err)
+	}
+
+	return buffer, nil
 }

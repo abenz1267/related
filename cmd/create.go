@@ -9,6 +9,7 @@ import (
 
 func init() {
 	createCmd.AddCommand(createTemplate)
+	createCmd.AddCommand(createFragment)
 }
 
 var createCmd = &cobra.Command{ //nolint
@@ -35,7 +36,22 @@ var createTemplate = &cobra.Command{ //nolint
 	},
 }
 
+var createFragment = &cobra.Command{ //nolint
+	Use:   "fragment [name] [file]",
+	Short: "create fragment or group",
+	Args:  cobra.MinimumNArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		result, err := cmd.Flags().GetBool("result")
+		if err != nil {
+			log.Panic(err)
+		}
+
+		creation.Create("fragment", args[0], args[1], result)
+	},
+}
+
 func init() {
 	createTemplate.Flags().BoolP("global", "g", false, "if set, generated file will be placed in user configuration folder")
 	createTemplate.Flags().BoolP("result", "r", false, "if set, the path to the generated template will be printed back")
+	createFragment.Flags().BoolP("result", "r", false, "if set, the path to the generated template will be printed back")
 }
