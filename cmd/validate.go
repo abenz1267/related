@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"errors"
-	"fmt"
 	"log"
 
 	"github.com/abenz1267/related/config"
@@ -19,6 +18,5 @@ var ValidateConfig = &cobra.Command{
 		}
 
 		cfg.Validate()
-		fmt.Printf("%+v", cfg)
 	},
 }
