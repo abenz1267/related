@@ -13,11 +13,9 @@ const Clear = "<clear>"
 
 type Fragment struct {
 	Name       string `json:"name" yaml:"name"`
-	Path       string `json:"path" yaml:"path"`
 	Template   string `json:"template" yaml:"template"`
-	Pre        string `json:"pre" yaml:"pre"`
-	Post       string `json:"post" yaml:"post"`
-	Filename   string `json:"filename" yaml:"filename"`
+	Script     string `json:"script" yaml:"script"`
+	File       string `json:"file" yaml:"file"`
 	ConfigFile string
 }
 
@@ -30,16 +28,15 @@ func (fragment Fragment) getParentName() string {
 }
 
 func (fragment *Fragment) inheritFrom(parent Fragment) {
-	fragment.Post = clearOrInherit(fragment.Post, parent.Post)
-	fragment.Pre = clearOrInherit(fragment.Pre, parent.Pre)
+	fragment.Script = clearOrInherit(fragment.Script, parent.Script)
 	fragment.Template = clearOrInherit(fragment.Template, parent.Template)
-	fragment.Filename = clearOrInherit(fragment.Filename, parent.Filename)
+	fragment.File = clearOrInherit(fragment.File, parent.File)
 
-	if strings.Contains(fragment.Path, Clear) {
-		fragment.Path = strings.TrimPrefix(fragment.Path, Clear)
-		fragment.Path = strings.TrimPrefix(fragment.Path, "/")
+	if strings.Contains(fragment.File, Clear) {
+		fragment.File = strings.TrimPrefix(fragment.File, Clear)
+		fragment.File = strings.TrimPrefix(fragment.File, "/")
 	} else {
-		fragment.Path = filepath.Join(parent.Path, fragment.Path)
+		fragment.File = filepath.Join(parent.File, fragment.File)
 	}
 }
 
@@ -54,8 +51,7 @@ func clearOrInherit(child, parent string) string {
 type Group struct {
 	Name       string `json:"name" yaml:"name"`
 	ConfigFile string
-	Pre        string   `json:"pre" yaml:"pre"`
-	Post       string   `json:"post" yaml:"post"`
+	Script     string   `json:"script" yaml:"script"`
 	Fragments  []string `json:"fragments" yaml:"fragments"`
 }
 
